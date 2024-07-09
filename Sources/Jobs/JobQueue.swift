@@ -45,7 +45,7 @@ public struct JobQueue<Queue: JobQueueDriver>: Service {
         let jobRequest = JobRequest(id: id, parameters: parameters)
         let buffer = try JSONEncoder().encodeAsByteBuffer(jobRequest, allocator: self.allocator)
         let id = try await self.queue.push(buffer)
-        self.handler.logger.debug("Pushed Job", metadata: ["_job_id": .stringConvertible(id), "_job_type": .string(jobRequest.id.name)])
+        self.logger.debug("Pushed Job", metadata: ["_job_id": .stringConvertible(id), "_job_type": .string(jobRequest.id.name)])
         return id
     }
 
@@ -78,6 +78,8 @@ public struct JobQueue<Queue: JobQueueDriver>: Service {
     public func run() async throws {
         try await self.handler.run()
     }
+
+    var logger: Logger { self.handler.logger }
 }
 
 extension JobQueue: CustomStringConvertible {
